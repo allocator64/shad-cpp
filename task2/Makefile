@@ -1,10 +1,10 @@
 default: all
 
 CXX = g++-4.9 -std=gnu++0x
-CXXFLAGS = -g -O0 -isystem gmock
+CXXFLAGS = -g -O0 -isystem gmock -MD -MF deps/$(subst /,%,$(@)).d
 WARNFLAGS = -Wall -pedantic # -Werror
 
-CPPLINT = cpplint --filter=-legal/copyright,-readability/streams,-runtime/printf
+CPPLINT = : cpplint --filter=-legal/copyright,-readability/streams,-runtime/printf
 
 SOURCES = $(shell find . -maxdepth 1 -name '*.cpp')
 BINARIES = $(SOURCES:.cpp=.bin)
@@ -21,8 +21,10 @@ $(BINARIES): %.bin: %.cpp $(OBJECTS_gmock)
 with_test: $(tests_passed)
 
 clean:
-	rm $(BINARIES) $(OBJECTS_gmock)
+	rm $(BINARIES) $(OBJECTS_gmock) deps/*.d
 
 all: $(BINARIES)
+
+-include deps/*.d
 
 phony: all clean default
